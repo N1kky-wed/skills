@@ -10,14 +10,33 @@ it is a correction the user made on a real site, written down so it never has to
 below, open the reference file for the stage you are in, and add to `references/taste.md` whenever the user corrects
 something new.
 
-Paths below are relative to this skill's folder. Scripts are Python (the user prefers Python) and are
-run as `python <skill>/scripts/<name>.py`; each has its usage in its docstring.
+Paths below are relative to this skill's folder, written `<skill>` in commands: the folder this SKILL.md is in
+(Claude Code names it as the skill's base directory when the skill loads). Scripts are Python (the user prefers
+Python) and are run from the project as `python <skill>/scripts/<name>.py` (`python3` where `python` is missing);
+each has its usage in its docstring. `<scratch>` means your scratchpad directory, or a folder outside the project if
+you have none. Never write into the skill folder.
+
+## Setup (once per machine)
+
+- Python 3.10+: `python -m pip install -r <skill>/scripts/requirements.txt`, then
+  `python -m playwright install chromium`. Video work also needs ffmpeg (on PATH, else the pip `imageio-ffmpeg`).
+- **A Gemini API key is required for generated images and video.** `gemini_image.py`, the borrowed `gen_*.py` and
+  `grade_portraits.py`, and any Veo or Omni video call the Gemini API with `GEMINI_API_KEY` (get one at
+  https://aistudio.google.com/apikey; calls are billed). Set it in the environment, or as a `GEMINI_API_KEY=...` line
+  in a `.env` file in the folder you run from, or in a `.env` named by `$MAHORAGA_ENV` (or `--env` on
+  `gemini_image.py`). `python <skill>/scripts/gemini_key.py` says whether a key is found, without printing it. No
+  other script needs a key: capture, palette, Dribbble pulls, video encoding and site checks all run without one.
+- If the work will need generated imagery and that check finds no key, tell the user at the start and ask them to set
+  one. Never skip generation silently or fill the gap with stock or placeholder images.
+- The browser pane and `preview_start` are the Claude desktop app's. Without them, use the session's browser tool if
+  it has one, else the Playwright scripts, and show the user screenshots (SendUserFile) wherever a step says "pane".
 
 ## Before anything
 
-If `local.md` sits next to this file, read it: it holds this machine's setup (the Gemini key file, the
-git identity, the deploy scope, where past projects live, folders that are off limits). It is not committed; start
-one from `local.example.md`.
+If `local.md` sits next to this file, read it: it holds this machine's own setup (which .env holds the Gemini key,
+the git identity, the deploy scope, where past projects live, folders that are off limits). It is optional and never
+committed; start one from `local.example.md`. Without it, commit with the repo's own git identity and ask the user
+for anything else a step needs (the deploy scope) rather than guessing.
 
 Then read `references/taste.md`. It is short and it is the difference between work the user keeps and work they bounce.
 The ones broken most often:
@@ -55,7 +74,8 @@ Keep the user posted with one-line status updates as you go; long silent stretch
 
 ### 3. Assets (`references/assets.md`)
 - Client assets first (logo drawn inline, real faces only with permission, their films and stills).
-- Generated photography with the reference passed in as an image: `scripts/gemini_image.py --ref`.
+- Generated photography with the reference passed in as an image: `scripts/gemini_image.py --ref` (needs the Gemini
+  key from Setup).
 - Films: `scripts/video_web.py` (web encode, muted loop with the logo strip cropped, poster, stills).
 - Product UI drawn in code with sample data that respects product facts.
 
@@ -91,17 +111,19 @@ Keep the user posted with one-line status updates as you go; long silent stretch
 | `refs_page.py` | The ten-reference page: numbered heroes at 1600px with a line each on what they become here |
 | `capture_reference.py` | A design reference's images at 2x as your own screenshots |
 | `palette.py` | Exact colors at points and the dominant palette of a capture |
-| `gemini_image.py` | Gemini image generation with reference images, aspect, size, resize, chroma-key |
+| `gemini_image.py` | Gemini image generation with reference images, aspect, size, resize, chroma-key (needs `GEMINI_API_KEY`) |
+| `gemini_key.py` | Is a Gemini API key available, and from where (never prints it); the loader the Gemini scripts share |
 | `video_web.py` | probe, web film, muted loop, poster, stills (with logo-strip crop), `silk` background loops |
-| `hero_loop.py` | A 4K Veo take into a hero loop: seam cut, 2x at 24fps, AV1 + H.264, portrait cut, poster |
+| `hero_loop.py` | A 4K Veo take (made with the Gemini API) into a hero loop: seam cut, 2x at 24fps, AV1 + H.264, portrait cut, poster |
 | `make_grain.py` | The baked grain tile for color fields |
 | `tour.py` | Scroll-through viewport screenshots as one sheet, desktop or phone |
 | `check_site.py` | Route statuses, console errors, overflow, frame rate, wheel-scroll test |
 
 `scripts/borrowed/` holds proven scripts from past sites (seamless Omni loops, one face across stills and loops,
 fitting a shape to a reference's frames, font matching, theme captures, contrast-safe identity colors, a mocked
-realtime SDK for app checks); its README says what each does. They carry their old project's paths, so read and adapt
-rather than run blind. `assets/examples/` holds three complete DESIGN.md files (8x.tweets, huly, 8x Meets) as models
+realtime SDK for app checks); its README says what each does and which need the Gemini key. Each was tuned to one
+project (prompts, sizes, crops, routes), so read and adapt rather than run blind; they read and write in the folder
+you run them from, or the folders their docstrings name by environment variable. `assets/examples/` holds three complete DESIGN.md files (8x.tweets, huly, 8x Meets) as models
 for writing one, the measured WebGL beam, and taste rules written as tests.
 
 ## Reference files
@@ -114,4 +136,4 @@ for writing one, the measured WebGL beam, and taste rules written as tests.
 - `references/app-ui.md`: app screens (rails, skeletons, messages, color meaning, two themes, rooms, verifying an
   app), learned on the Kivo app, 8x.karma and 8x Meets.
 - `references/projects.md`: what each past site was, what worked, where its code lives (for borrowing).
-- `references/build-verify-deploy.md`: stack, Windows quirks, the verify loop, commits, Vercel.
+- `references/build-verify-deploy.md`: stack, platform notes (Windows, macOS, Linux), the verify loop, commits, Vercel.

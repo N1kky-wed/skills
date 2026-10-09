@@ -6,11 +6,13 @@ shots at once (the pane is too small to judge thumbnails).
 
 Writes OUT/<slug>/NN.jpg (800px), OUT/<slug>/shots.json (title, author, shot link, image src) and
 OUT/<slug>-sheet.jpg (4 columns, numbered). Pick from the sheets, then build the page with refs_page.py.
-Run several pulls in parallel; set PYTHONIOENCODING=utf-8 on Windows (author names are not ASCII).
+Run several pulls in parallel.
 """
-import argparse, io, json, os, urllib.request
+import argparse, io, json, os, sys, urllib.request
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageDraw, ImageFont
+
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')  # page text is rarely ASCII; Windows pipes default to cp1252
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36"
 SHOTS_JS = """() => [...document.querySelectorAll('li.shot-thumbnail, li[id^="screenshot-"]')].map(li => {
@@ -52,8 +54,8 @@ def main():
     d = ImageDraw.Draw(sheet)
     try:
         font = ImageFont.truetype("arial.ttf", 15)
-    except Exception:
-        font = ImageFont.load_default()
+    except OSError:  # no Arial (Linux, some macOS setups): Pillow's own font
+        font = ImageFont.load_default(15)
     for i, s in enumerate(shots):
         src = s["src"].replace("resize=400x300", "resize=800x600")
         try:

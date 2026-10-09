@@ -22,7 +22,8 @@ WT=${WT:-$(dirname "$REPO")/wt-integ-scratch}
 
 if [ -z "${TEST_CMD:-}" ]; then
   if   [ -f "$REPO/package.json" ];   then TEST_CMD="npm test --silent"
-  elif [ -f "$REPO/pyproject.toml" ] || [ -f "$REPO/pytest.ini" ]; then TEST_CMD="python -m pytest -q"
+  elif [ -f "$REPO/pyproject.toml" ] || [ -f "$REPO/pytest.ini" ]; then
+    TEST_CMD="$(command -v python >/dev/null 2>&1 && echo python || echo python3) -m pytest -q"
   elif [ -f "$REPO/go.mod" ];         then TEST_CMD="go test ./..."
   elif [ -f "$REPO/Cargo.toml" ];     then TEST_CMD="cargo test --quiet"
   else echo "set TEST_CMD (no test runner detected); exclude tests that touch real systems" >&2; exit 2; fi

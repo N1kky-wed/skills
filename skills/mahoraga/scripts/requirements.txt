@@ -1,0 +1,10 @@
+# Python 3.10+ packages for the mahoraga scripts:
+#   python -m pip install -r requirements.txt
+#   python -m playwright install chromium        (the browser the capture and check scripts drive)
+# Video work also wants ffmpeg on PATH (brew / apt / winget install ffmpeg); imageio-ffmpeg is the fallback binary.
+playwright>=1.40
+Pillow>=10.1          # load_default(size) for contact-sheet labels when Arial is missing
+numpy
+google-genai>=2.9     # Gemini images and video: needs a GEMINI_API_KEY (python gemini_key.py checks)
+av                    # PyAV: video_web.py probe/silk, the borrowed loop scripts
+imageio-ffmpeg

@@ -1,10 +1,11 @@
 """The cinematic layer: one cast, one lighting language (warm ember key from the creators' side, cool cobalt rim from
 the brands' side, pitch-black studio, haze), carried through stills and seamless loops.
 
-    python scripts/gen_cinema.py            # everything missing
-    python scripts/gen_cinema.py maya hero  # only these jobs
+    python gen_loop_omni.py            # everything missing
+    python gen_loop_omni.py maya hero  # only these jobs
 
-Stills: Nano Banana Pro. Loops: Gemini Omni with the still as first AND last frame; when a clip opens off-still
+Needs GEMINI_API_KEY (see ../gemini_key.py; each call is billed) and ffmpeg on PATH. Shares the client, folders
+(SITE_DIR, RAW_DIR) and avatar stills of gen_stills_x.py, which it imports. Stills: Nano Banana Pro. Loops: Gemini Omni with the still as first AND last frame; when a clip opens off-still
 anyway, the loop is cut from its settled stretch and the tail crossfaded into the frames before that start.
 """
 import base64, pathlib, re, subprocess, sys, time
@@ -15,7 +16,7 @@ import numpy as np
 from PIL import Image, ImageOps
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import gen_assets as g   # client, retries, RAW/OUT, avatar images
+import gen_stills_x as g   # client, retries, RAW/OUT, avatar images
 
 OMNI = "gemini-omni-1.1-flash"
 LIGHT = ("Shot in a pitch-black studio: a warm ember-orange key light from the left, a cool cobalt-blue rim light from "

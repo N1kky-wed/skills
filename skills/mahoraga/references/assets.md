@@ -28,12 +28,15 @@ section that reads as a wall of text where the reference has an image.
   items (1K, then `--resize 384x384`).
 - Avatars: ask for a full-bleed square photo, "not a circle, no border, no interface element or icon anywhere".
   Otherwise the model draws a round crop with white corners and sometimes copies UI (a mic icon) from the reference.
-- Cut-outs: render on solid chroma green and add `--key`; anything green itself (plants, a lime brand) goes on
-  chroma blue with `--key blue`. Check edges against the real page background.
+- Cut-outs: render on solid chroma green and add `--chroma`; anything green itself (plants, a lime brand) goes on
+  chroma blue with `--chroma blue`. Check edges against the real page background.
 - Check every render side by side with the reference before building on it (`visual-fidelity`: the user judges by
   eye whether it looks physically plausible and seamless, not just close).
-- Scripts read `GEMINI_API_KEY` from the environment, or from the .env file named by `--env` or `$MAHORAGA_ENV`
-  (`local.md` says where it is and whether test generations need asking first). Never print the key.
+- **Requires a Gemini API key** (`GEMINI_API_KEY`, from https://aistudio.google.com/apikey; every call is billed).
+  The scripts take it from the environment, else from a `GEMINI_API_KEY=...` line in the .env named by `--env` or
+  `$MAHORAGA_ENV`, else `./.env`; without one they stop before calling anything and print how to set it.
+  `python scripts/gemini_key.py` checks without printing the key. `local.md`, if present, says which .env holds it and
+  whether test generations need asking first. Never print the key.
 
 ## Video
 
@@ -44,7 +47,8 @@ Client films (`find_media.py`, then `video_web.py`):
 - `poster` and `stills`: frames as WebP; stills from a client's film are excellent mock photography.
 - Vimeo films play from Vimeo (their counts stay theirs); only the poster is local.
 
-Generated video (if you keep notes on the Veo 3.1 and Omni Flash APIs, read them first):
+Generated video (Veo and Omni are Gemini API calls on the same `GEMINI_API_KEY`; if you keep notes on the Veo 3.1 and
+Omni Flash APIs, read them first):
 - Veo 3.1 (`models.generate_videos`, long-running): passing the same still as first and last frame gives a seamless
   loop; say the object "keeps exactly the same shape, size and position". 1080p, 4k and reference images need 8s.
   Make 3 or 4 takes and pick; there is no seed on the developer API.
@@ -81,7 +85,7 @@ The background that made 8x.tweets and 8x Meets feel premium without a flat grou
 For a hero, where the field is the first thing seen at full width, `silk` is not enough (its 30fps resample and
 denoise smear the rims, and a 1600px file is soft on big screens). Use `scripts/hero_loop.py` instead (8x Comment
 Desk, 2026-10-04):
-1. Veo 3.1 at `resolution: "4k"` over REST, the same still as `image` and `lastFrame`
+1. Veo 3.1 at `resolution: "4k"` over REST (the key in an `x-goog-api-key` header), the same still as `image` and `lastFrame`
    (`{"bytesBase64Encoded", "mimeType"}`; `inlineData` is refused). About 6 minutes a take; make three.
 2. `python scripts/hero_loop.py out/ take.mp4`: cuts at the tail frame nearest frame 0 (Veo lands on the last frame
    about 8 frames early), slows 2x with motion-compensated interpolation at 24fps so every other frame is real, at

@@ -8,6 +8,8 @@ the step across the seam is interpolated like any other (frames past the seam ar
 dropped). Interpolation runs at each output's own size, landscape 2560x1440 and a portrait 1080x1920 cut of
 the frame's centre, into near-lossless masters; every web file is encoded from a master.
 
+Needs an ffmpeg with libaom-av1, libx264 and libwebp: the one on PATH, else the imageio-ffmpeg binary.
+
 Outputs (muted, BT.709 tagged, +faststart so playback starts before the download ends):
     <name>-1440.av1.mp4    2560x1440 AV1 10-bit (10-bit keeps the sky gradient from banding)
     <name>-1080.h264.mp4   1920x1080 H.264 High 4.1, where AV1 does not decode
@@ -17,11 +19,24 @@ Outputs (muted, BT.709 tagged, +faststart so playback starts before the download
 """
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
-FF = "ffmpeg"
+
+def find_ffmpeg():
+    exe = shutil.which("ffmpeg")
+    if exe:
+        return exe
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        sys.exit("ffmpeg not found: install it (brew/apt/winget install ffmpeg) or pip install imageio-ffmpeg")
+
+
+FF = find_ffmpeg()
 # On the frames, not as encoder options: those wrote the matrix alone, and with primaries and transfer unknown
 # Chromium decoded the loop as BT.601, a visible shift from the poster under it.
 TAG = "setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv"

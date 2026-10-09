@@ -1,11 +1,14 @@
-"""Build .impeccable/design.json from DESIGN.md (narrative, verbatim) + colormeta.json (ramps)."""
+"""Build .impeccable/design.json from DESIGN.md (narrative, verbatim) + colormeta.json (ramps).
+
+    MEETS_REPO=<the 8x-gmeet checkout> python design_sidecar.py
+
+Reads <repo>/DESIGN.md and COLOR_META (default <repo>/colormeta.json); writes <repo>/.impeccable/design.json."""
 import datetime, json, os, re, sys
 
 ROOT = os.environ.get("MEETS_REPO", ".")  # the 8x-gmeet checkout
-HERE = os.path.dirname(os.path.abspath(__file__))
 md = open(os.path.join(ROOT, "DESIGN.md"), encoding="utf-8").read()
 body = md.split("\n---\n", 1)[1]
-color_meta = json.load(open(os.path.join(HERE, "colormeta.json"), encoding="utf-8"))
+color_meta = json.load(open(os.environ.get("COLOR_META", os.path.join(ROOT, "colormeta.json")), encoding="utf-8"))
 
 # ---------------- narrative, verbatim ----------------
 sections, cur = {}, None

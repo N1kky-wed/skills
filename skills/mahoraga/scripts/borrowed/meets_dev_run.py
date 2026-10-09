@@ -1,13 +1,22 @@
 """Local-only runner for 8x Meets UI work: throwaway DB, seeded people/meetings/archive,
-a dev sign-in route and a mocked LiveKit client. Nothing here ships."""
-import os, sys, json, sqlite3, subprocess
+a dev sign-in route and a mocked LiveKit client. Nothing here ships.
+
+    MEETS_REPO=<the 8x-gmeet checkout> python meets_dev_run.py     # then http://127.0.0.1:5005
+
+The throwaway DB and recordings go to WORK_DIR (default: meets-dev in the system temp folder). AVATARS_DIR is any
+folder of sample faces (default <repo>/public/avatars); POSTER_SRC an image for the archived recording's frame
+(default: a flat lilac frame). Needs ffmpeg on PATH."""
+import os, sys, json, sqlite3, subprocess, tempfile
 from datetime import datetime, timezone, timedelta
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-REPO = os.environ.get("MEETS_REPO", ".")  # the 8x-gmeet checkout
-AVATARS = os.environ.get("AVATARS_DIR", "public/avatars")  # any folder of sample faces
-DB = os.path.join(HERE, "meeting.db")
-REC = os.path.join(HERE, "recordings")
+HERE = os.path.dirname(os.path.abspath(__file__))  # lk-mock.js ships beside this file
+REPO = os.path.abspath(os.environ.get("MEETS_REPO", "."))  # the 8x-gmeet checkout
+AVATARS = os.path.abspath(os.environ.get("AVATARS_DIR", os.path.join(REPO, "public", "avatars")))
+POSTER_SRC = os.environ.get("POSTER_SRC")
+WORK = os.path.abspath(os.environ.get("WORK_DIR", os.path.join(tempfile.gettempdir(), "meets-dev")))
+os.makedirs(WORK, exist_ok=True)
+DB = os.path.join(WORK, "meeting.db")
+REC = os.path.join(WORK, "recordings")
 
 for f in (DB, DB + "-wal", DB + "-shm"):
     if os.path.exists(f):
@@ -175,7 +184,8 @@ rd = os.path.join(REC, "mkr-owqe-jtl")
 os.makedirs(rd, exist_ok=True)
 poster = os.path.join(rd, "poster.jpg")
 if not os.path.exists(poster):
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", os.path.join(HERE, "poster-src.png"), "-q:v", "3", poster], check=True)
+    src = ["-i", os.path.abspath(POSTER_SRC)] if POSTER_SRC else ["-f", "lavfi", "-i", "color=c=0xd9d4f2:s=1280x720"]
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *src, "-frames:v", "1", "-q:v", "3", poster], check=True)
 if not os.path.exists(os.path.join(rd, "final.mp4")):
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-i", poster, "-t", "2280", "-r", "1",
                     "-vf", "scale=1280:-2", "-c:v", "libx264", "-tune", "stillimage", "-pix_fmt", "yuv420p",

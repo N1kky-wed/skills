@@ -1,7 +1,10 @@
 """Side by side: our dome passage vs Taiko's frames, matched by crown height.
 
-usage: python domecmp.py <path> <section-start-text> <mode: statement|passage> <taiko dir> <taiko times csv> <our s csv> <out>
+usage: python compare_frames.py <path> <section-start-text> <mode: statement|passage> <taiko dir> <taiko times csv> <our s csv> <out>
+
+<path> is opened on the running site at BASE_URL (default http://localhost:3000).
 """
+import os
 import sys
 import time
 from pathlib import Path
@@ -13,12 +16,13 @@ path, marker, mode, tdir, ttimes, svals, out = sys.argv[1:8]
 ttimes = [float(t) for t in ttimes.split(',')]
 svals = [float(s) for s in svals.split(',')]
 W, H = 1512, 850
+BASE_URL = os.environ.get('BASE_URL', 'http://localhost:3000').rstrip('/')
 shots = []
 with sync_playwright() as p:
     b = p.chromium.launch(args=['--enable-gpu-rasterization'])
     pg = b.new_page(viewport={'width': W, 'height': H})
     pg.add_init_script("try{localStorage.setItem('8x_analytics_consent','denied')}catch(e){}")
-    pg.goto(f'http://localhost:3200{path}', wait_until='networkidle')
+    pg.goto(f'{BASE_URL}{path}', wait_until='networkidle')
     time.sleep(2)
     for s in svals:
         y = pg.evaluate(

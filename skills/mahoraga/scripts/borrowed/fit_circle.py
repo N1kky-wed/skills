@@ -1,7 +1,11 @@
-"""Measure Taiko's dark disc: per frame, the black core's boundary profile, a circle fit, and the rim colours.
+"""Measure a reference's dark disc (Taiko's): per frame, the black core's boundary profile, a circle fit, and the rim
+colours.
 
-usage: python disc.py <start> <end> <fps> <mode: top|bottom>
+usage: python fit_circle.py <start> <end> <fps> <mode: top|bottom>
+
+Reads the screen recording 00.mp4 in FRAMES_DIR (default: the folder you run from), as ref_frames.py does.
 """
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -9,7 +13,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-HERE = Path(__file__).parent / 'taiko'
+HERE = Path(os.environ.get('FRAMES_DIR', '.'))
 start, end, fps, mode = float(sys.argv[1]), float(sys.argv[2]), float(sys.argv[3]), sys.argv[4]
 out = HERE / f'disc-{mode}'
 out.mkdir(exist_ok=True)

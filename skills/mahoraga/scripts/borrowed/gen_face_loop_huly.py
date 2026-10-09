@@ -1,23 +1,25 @@
 """Generate the demo's media with Gemini.
 
-    python scripts/gen_assets.py            # everything missing
-    python scripts/gen_assets.py maya arch  # only these jobs (existing outputs are kept)
+    python gen_face_loop_huly.py            # everything missing
+    python gen_face_loop_huly.py maya arch  # only these jobs (existing outputs are kept)
 
+Needs GEMINI_API_KEY (see ../gemini_key.py; each call is billed) and ffmpeg on PATH.
 Pipeline per call participant: portrait -> webcam still (same person, via reference image)
--> seamless Omni loop (still used as first AND last frame). Outputs land in assets/.
+-> seamless Omni loop (still used as first AND last frame). Run it from the site's folder, or set SITE_DIR:
+outputs land in <site>/assets/, full-size originals in RAW_DIR (default: huly-assets-raw beside the site).
 """
 import base64, io, os, pathlib, re, subprocess, sys, time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from google import genai
 from PIL import Image, ImageOps
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))  # the skill's scripts/, for gemini_key
+from gemini_key import load_key
+
+ROOT = pathlib.Path(os.environ.get("SITE_DIR", ".")).resolve()  # the site checkout
 OUT = ROOT / "assets"
-RAW = ROOT.parent / "huly-assets-raw"  # full-size Gemini originals, kept outside the web root
-ENV = pathlib.Path(os.environ.get("MAHORAGA_ENV", ".env"))  # a .env holding GEMINI_API_KEY; never print the key
-key = next(l.split("=", 1)[1].strip() for l in ENV.read_text(encoding="utf-8-sig").splitlines()
-           if l.startswith("GEMINI_API_KEY="))
-client = genai.Client(api_key=key)
+RAW = pathlib.Path(os.environ.get("RAW_DIR", ROOT.parent / "huly-assets-raw"))  # full-size originals, outside the web root
+client = genai.Client(api_key=load_key(script="gen_face_loop_huly.py"))
 
 # The Interactions client retries up to 4x by default, including on dropped connections, which
 # would re-run (and re-bill) a finished generation. Only 429/503 are retried below: never processed.

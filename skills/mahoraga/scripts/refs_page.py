@@ -7,7 +7,7 @@ make it a default for the mahoraga skill to show 10 references like this").
 picks.json is a list of up to ten picks, either from a dribbble_pull.py folder or given directly:
     [{"sheet": "<scratch>/insp/aihiring", "index": 17, "name": "Photographic, moody green",
       "note": "The product on a real laptop in a real room. Both sites: work shown where it happens."},
-     {"image": "https://... or C:/path.png", "href": "https://site", "title": "Site name", "who": "Studio",
+     {"image": "https://... or path/to/local.png", "href": "https://site", "title": "Site name", "who": "Studio",
       "name": "...", "note": "..."}]
 Any pick may carry "label" to replace its number badge: when the user asks to see "more of 9", put that shot's own
 screens first as "9.1", "9.2" ... (grab them all from the shot page), then ten new picks in the same family.
@@ -16,8 +16,10 @@ Then serve it and open it in the browser pane (a file:// page outside the projec
 that no tool can check): add a launch config running `python -m http.server <port> --bind 127.0.0.1 --directory
 <out>` and preview_start it, and confirm every image loaded (naturalWidth 1600).
 """
-import argparse, html, io, json, pathlib, urllib.request
+import argparse, html, io, json, pathlib, sys, urllib.request
 from PIL import Image
+
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')  # page text is rarely ASCII; Windows pipes default to cp1252
 
 
 def fetch(src, dest):

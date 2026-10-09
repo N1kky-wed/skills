@@ -1,10 +1,11 @@
-"""Capture the 8x Meets UI (local runner on :5005) in both themes at desktop and phone sizes.
-usage: python shots.py <round-dir> [only-name-substring ...]"""
+"""Capture the 8x Meets UI (meets_dev_run.py on :5005, or BASE_URL) in both themes at desktop and phone sizes.
+usage: python theme_shots.py <round-dir> [only-name-substring ...]
+Writes ./shots/<round-dir>/ in the folder you run from."""
 import sys, os, time
 from playwright.sync_api import sync_playwright
 
-BASE = "http://127.0.0.1:5005"
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "shots", sys.argv[1] if len(sys.argv) > 1 else "r1")
+BASE = os.environ.get("BASE_URL", "http://127.0.0.1:5005").rstrip("/")
+OUT = os.path.join("shots", sys.argv[1] if len(sys.argv) > 1 else "r1")
 ONLY = sys.argv[2:]
 os.makedirs(OUT, exist_ok=True)
 DESK = dict(viewport={"width": 1440, "height": 900}, device_scale_factor=1)

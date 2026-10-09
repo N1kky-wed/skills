@@ -24,17 +24,22 @@
   user.email=<email> commit` with a `type(scope): lowercase subject` header (72 chars max), a blank line, a body, and the Co-Authored-By trailer
   the session asks for.
 
-## Windows environment
+## Platform notes
 
-- Heredocs eat backslashes (`python - <<'EOF'` turns `\\` into `\`): write scripts with the Write tool, then run them.
-- Git Bash rewrites arguments that start with `/` into Windows paths: prefix `MSYS_NO_PATHCONV=1`.
-- `preview_start` reads launch configs from the session's root project and refuses a `cwd` outside it. When the site
-  lives elsewhere, a junction inside the session folder works
-  (`New-Item -ItemType Junction -Path "<session>\<name>" -Target "<site>"`, then `"cwd": "<name>"`), or move the
-  session with change_directory (takes effect next turn).
-- Stopping a background `npm run dev` can orphan `next` and embedded `postgres`; check ports with
-  `Get-NetTCPConnection -LocalPort <port>`.
-- Never run dev servers with Bash; use `preview_start`.
+The scripts behave the same on Windows, macOS and Linux; the shell around them differs.
+
+- Python is `python3` on most macOS and Linux machines and may be `py` on Windows; use whichever exists.
+- Windows (Git Bash): heredocs eat backslashes (`python - <<'EOF'` turns `\\` into `\`), so write scripts with the
+  Write tool, then run them. Arguments that start with `/` get rewritten into Windows paths: prefix
+  `MSYS_NO_PATHCONV=1`.
+- `preview_start` (Claude desktop app) reads launch configs from the session's root project and refuses a `cwd`
+  outside it. When the site lives elsewhere, link it into the session folder and use `"cwd": "<name>"`: on Windows a
+  junction (`New-Item -ItemType Junction -Path "<session>\<name>" -Target "<site>"`), on macOS and Linux a symlink
+  (`ln -s "<site>" "<session>/<name>"`). Or move the session with change_directory (takes effect next turn).
+- Stopping a background `npm run dev` can orphan `next` and embedded `postgres`; see what holds a port with
+  `Get-NetTCPConnection -LocalPort <port>` (Windows) or `lsof -i :<port>` (macOS, Linux).
+- Where `preview_start` exists, run dev servers with it, never with Bash. Elsewhere start them in the background and
+  stop them by PID.
 
 ## Verify (two rounds at most, then stop polishing)
 

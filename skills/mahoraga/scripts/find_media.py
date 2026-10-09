@@ -9,7 +9,9 @@ A Vimeo user page lists ids in its links (open it in the browser pane: vimeo.com
 duration, description and thumbnail without an API key. Self-hosted .mp4 files are worth downloading (with the
 user's go-ahead) and re-encoding with video_web.py: their own servers are often too slow to stream from.
 """
-import argparse, io, json, os, re, urllib.request
+import argparse, io, json, os, re, sys, urllib.request
+
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')  # page text is rarely ASCII; Windows pipes default to cp1252
 
 
 def get(url, timeout=40):

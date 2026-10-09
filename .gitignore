@@ -1,3 +1,6 @@
 # machine-specific setup for a skill stays local
 skills/*/local.md
+# API keys (GEMINI_API_KEY) never get committed
+.env
+.env.*
 __pycache__/

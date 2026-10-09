@@ -1,8 +1,10 @@
 """Record a scroll-through of a page as video: pointer play in the hero, a vote, then a slow wheel scroll to the end.
-usage: python record.py <path> <out.mp4> [--seconds N]"""
+usage: python record_scroll.py <path> <out.mp4>
+<path> is opened on the running site at BASE_URL (default http://localhost:3000). Needs ffmpeg on PATH."""
 import sys, os, time, glob, shutil, subprocess
 from playwright.sync_api import sync_playwright
 
+BASE_URL = os.environ.get("BASE_URL", "http://localhost:3000").rstrip("/")
 path, out = sys.argv[1], sys.argv[2]
 tmp = os.path.join(os.path.dirname(out) or ".", "_rec")
 shutil.rmtree(tmp, ignore_errors=True)
@@ -11,7 +13,7 @@ with sync_playwright() as pw:
     ctx = br.new_context(viewport={"width": 1280, "height": 800}, record_video_dir=tmp, record_video_size={"width": 1280, "height": 800})
     ctx.add_init_script("try{localStorage.setItem('8x_analytics_consent','denied')}catch(e){}")
     pg = ctx.new_page()
-    pg.goto("http://localhost:3200" + path, wait_until="domcontentloaded")
+    pg.goto(BASE_URL + path, wait_until="domcontentloaded")
     time.sleep(1.0)
     # dismiss the consent card so it does not sit over the film
     for label in ("Decline",):

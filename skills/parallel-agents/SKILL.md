@@ -52,7 +52,7 @@ The user wants the conversation free while work happens, so nothing slow runs in
 ## 4. Integrate and ship (you)
 
 For each finished PR:
-1. **Combine with current main and test everything.** Run `scripts/integrate.sh <branch> [more…]`. It creates a scratch worktree from the main branch, merges the branches, stops on conflicts, and runs the profile's test command. Configure it via the env vars at its top, or a `.claude/agent-profile.env`. Run it in the background.
+1. **Combine with current main and test everything.** From inside the repo, run `bash <this skill's folder>/scripts/integrate.sh <branch> [more…]`. It creates a scratch worktree from the main branch, merges the branches, stops on conflicts, and runs the profile's test command. Configure it via the env vars at its top, or a `.claude/agent-profile.env`. Run it in the background.
 2. **Conflicts:** resolve them in the scratch worktree, keeping both sides' intent. Put the same resolution on the PR branch (merge main into it, then copy the resolved files from the scratch commit) and confirm the two trees are identical (`git diff HEAD <scratch sha>` is empty). What you merge must be exactly what you tested.
 3. **Review the risky parts yourself:** auth and permissions, input validation, anything touching user data, money, or production config. Be extra careful when an automated check on the agent's work was skipped or timed out.
 4. **Check user-facing changes yourself:** for UI or behaviour changes, do a short real run on the combined code (the profile's preview), not just tests.

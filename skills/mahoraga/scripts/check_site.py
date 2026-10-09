@@ -8,8 +8,10 @@ while wheel-scrolling, and whether a wheel scroll that starts over the hero actu
 show it. --perf adds the scroll test: 60fps and a full-distance scroll are the bar (a hero that eats the wheel, or a
 page that stalls entering the next section, reads to the user as "I can't even scroll").
 """
-import argparse, time
+import argparse, sys, time
 from playwright.sync_api import sync_playwright
+
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')  # page text is rarely ASCII; Windows pipes default to cp1252
 
 FPS = """() => new Promise(res => { let n = 0; const t0 = performance.now(); let worst = 0, last = t0;
   const f = (t) => { n++; worst = Math.max(worst, t - last); last = t;

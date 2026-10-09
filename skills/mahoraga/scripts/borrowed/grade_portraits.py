@@ -1,4 +1,9 @@
-"""Generate the example Redditors' profile pictures for the showcase mocks (fictional people, example data)."""
+"""Generate the example Redditors' profile pictures for the showcase mocks (fictional people, example data).
+
+    python grade_portraits.py [handle ...]
+
+Needs GEMINI_API_KEY (see ../gemini_key.py; each call is billed). Writes to PEOPLE_DIR (default
+./public/karma/people, relative to the folder you run it from)."""
 import base64
 import io
 import os
@@ -8,14 +13,12 @@ from pathlib import Path
 from google import genai
 from PIL import Image
 
-ENV = Path(os.environ.get('MAHORAGA_ENV', '.env'))  # a .env holding GEMINI_API_KEY; never print the key
-for line in ENV.read_text(encoding='utf-8').splitlines():
-    if line.startswith('GEMINI_API_KEY='):
-        os.environ['GEMINI_API_KEY'] = line.split('=', 1)[1].strip().strip('"').strip("'")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # the skill's scripts/, for gemini_key
+from gemini_key import load_key
+
+client = genai.Client(api_key=load_key(script='grade_portraits.py'))
 OUT = Path(os.environ.get('PEOPLE_DIR', 'public/karma/people'))
 OUT.mkdir(parents=True, exist_ok=True)
-
-client = genai.Client()
 ix = client.interactions
 rc = ix.sdk_configuration.retry_config
 rc.max_retries, rc.retry_connection_errors = 0, False

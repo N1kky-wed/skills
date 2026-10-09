@@ -1,14 +1,27 @@
-"""Extract Taiko frames at a given rate and time range, cropped to the browser content, into labelled contact sheets.
+"""Extract a reference's frames at a given rate and time range, cropped to the browser content, into labelled
+contact sheets.
 
-usage: python frames.py <start> <end> <fps> <out_prefix> [cols] [thumb_w]
+usage: python ref_frames.py <start> <end> <fps> <out_prefix> [cols] [thumb_w]
+
+Reads the screen recording 00.mp4 in FRAMES_DIR (default: the folder you run from) and writes the frames and sheets
+there. The crop (1512x850 at 44,175) is the browser content of the original Taiko recording: measure your own.
 """
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-HERE = Path(__file__).parent / 'taiko'
+
+def label_font(size):
+    try:
+        return ImageFont.truetype('arial.ttf', size)
+    except OSError:  # no Arial (Linux, some macOS setups): Pillow's own font
+        return ImageFont.load_default(size)
+
+
+HERE = Path(os.environ.get('FRAMES_DIR', '.'))
 start, end, fps, prefix = float(sys.argv[1]), float(sys.argv[2]), float(sys.argv[3]), sys.argv[4]
 cols = int(sys.argv[5]) if len(sys.argv) > 5 else 6
 tw = int(sys.argv[6]) if len(sys.argv) > 6 else 480
@@ -23,7 +36,7 @@ subprocess.run(
 )
 frames = sorted(out.glob('*.png'))
 th = round(tw * 850 / 1512)
-font = ImageFont.truetype('arial.ttf', 16)
+font = label_font(16)
 per = cols * 5
 for s in range(0, len(frames), per):
     chunk = frames[s:s + per]

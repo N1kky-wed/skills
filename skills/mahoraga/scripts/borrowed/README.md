@@ -1,9 +1,19 @@
 # Borrowed scripts
 
-Working scripts lifted from past sites. They carry their original project's paths, prompts and sizes: read one, then
-adapt it (or copy its approach into a fresh script) rather than running it blind. The ones that touch Gemini read
-`GEMINI_API_KEY` from the .env file in `$MAHORAGA_ENV` (else `./.env`); never print the key. Folder paths come from
-environment variables named at the top of each script.
+Working scripts lifted from past sites. Each was tuned to its own project (prompts, sizes, crops, routes): read one,
+then adapt it (or copy its approach into a fresh script) rather than running it blind.
+
+- **Files:** every script reads and writes in the folder you run it from, or in folders named by the environment
+  variables its docstring lists (`SITE_DIR`, `RAW_DIR`, `WORK_DIR`, `FRAMES_DIR`, `MEETS_REPO`, ...). None writes
+  into the skill folder.
+- **Gemini API key:** `gen_stills_x.py`, `gen_loop_omni.py`, `gen_face_loop_huly.py` and `grade_portraits.py` call the
+  Gemini API and need `GEMINI_API_KEY` (https://aistudio.google.com/apikey; calls are billed). They find it like
+  `../gemini_image.py` does: the environment, then the .env named by `$MAHORAGA_ENV`, then `./.env`, and stop with
+  setup instructions when there is none (`python ../gemini_key.py` checks). Never print the key. The other scripts
+  need no key.
+- **Running sites:** the page scripts open `BASE_URL` (default `http://localhost:3000`; the 8x Meets ones default to
+  `meets_dev_run.py` on `http://127.0.0.1:5005`).
+- **ffmpeg** on PATH for the video ones.
 
 | Script | From | What it does |
 |---|---|---|

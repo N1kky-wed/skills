@@ -21,6 +21,8 @@ import argparse, json, os, re, sys, time
 from urllib.parse import urljoin, urlparse
 from playwright.sync_api import sync_playwright
 
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')  # page text is rarely ASCII; Windows pipes default to cp1252
+
 INFO_JS = r"""() => {
   const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
   const media = new Set();

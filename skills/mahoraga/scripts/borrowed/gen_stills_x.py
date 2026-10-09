@@ -1,22 +1,24 @@
 """Generate the site's photographic material with Gemini: creator profile photos and product photos for posts.
 
-    python scripts/gen_assets.py           # everything missing
-    python scripts/gen_assets.py maya kbd  # only these jobs (existing outputs are kept)
+    python gen_stills_x.py           # everything missing
+    python gen_stills_x.py maya kbd  # only these jobs (existing outputs are kept)
 
-Everything else on the site (posts, cards, charts, light) is drawn in code.
+Needs GEMINI_API_KEY (see ../gemini_key.py; each call is billed). Run it from the site's folder, or set SITE_DIR:
+web files go to <site>/public, full-size originals to RAW_DIR (default: x-assets-raw beside the site, outside its
+web root). Everything else on the site (posts, cards, charts, light) is drawn in code.
 """
 import base64, os, pathlib, sys, time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from google import genai
 from PIL import Image, ImageOps
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))  # the skill's scripts/, for gemini_key
+from gemini_key import load_key
+
+ROOT = pathlib.Path(os.environ.get("SITE_DIR", ".")).resolve()  # the site checkout
 OUT = ROOT / "public"
-RAW = ROOT.parent / "x-assets-raw"   # full-size originals, kept outside the web root
-ENV = pathlib.Path(os.environ.get("MAHORAGA_ENV", ".env"))  # a .env holding GEMINI_API_KEY; never print the key
-key = next(l.split("=", 1)[1].strip() for l in ENV.read_text(encoding="utf-8-sig").splitlines()
-           if l.startswith("GEMINI_API_KEY="))
-client = genai.Client(api_key=key)
+RAW = pathlib.Path(os.environ.get("RAW_DIR", ROOT.parent / "x-assets-raw"))  # full-size originals, outside the web root
+client = genai.Client(api_key=load_key(script="gen_stills_x.py"))
 # the Interactions client retries dropped connections by default, which can re-run (and re-bill) a finished
 # generation; only 429/503 are retried below
 ix = client.interactions

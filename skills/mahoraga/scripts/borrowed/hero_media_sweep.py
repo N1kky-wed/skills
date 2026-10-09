@@ -1,13 +1,14 @@
 """Hero video masters and a quality sweep. Masters: the Veo take made seamless (drop the first 0.5s, crossfade the tail
 in), Veo's letterbox cropped, 1920x1080, light denoise, all in 10-bit so gradients stay smooth; stored lossless (FFV1).
 Sweep: encode the careers master at a few quality levels per codec and score each against the master (SSIM) and size.
-usage: python media_sweep.py masters | sweep"""
+usage: python hero_media_sweep.py masters | sweep
+Works in WORK_DIR (default: the folder you run from), which holds the Veo takes named in SRC."""
 import concurrent.futures as cf
-import pathlib, re, subprocess, sys
+import os, pathlib, re, subprocess, sys
 import imageio_ffmpeg
 
 FF = imageio_ffmpeg.get_ffmpeg_exe()
-H = pathlib.Path(__file__).parent
+H = pathlib.Path(os.environ.get('WORK_DIR', '.'))
 SRC = {'careers': 'careers-orb-loop2.mp4', 'playmakers': 'pm-sphere-loop5.mp4'}
 F, L = 0.5, 8.0
 

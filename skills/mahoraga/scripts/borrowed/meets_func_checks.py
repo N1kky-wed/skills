@@ -1,8 +1,9 @@
-"""Functional checks: theme switch, custom player, timeline seek, dashboard dedupe, room hand/toast."""
-import time
+"""Functional checks: theme switch, custom player, timeline seek, dashboard dedupe, room hand/toast.
+Against meets_dev_run.py on :5005, or BASE_URL."""
+import os, time
 from playwright.sync_api import sync_playwright
 
-B = "http://127.0.0.1:5005"
+B = os.environ.get("BASE_URL", "http://127.0.0.1:5005").rstrip("/")
 ok = lambda c, m: print(("PASS " if c else "FAIL ") + m)
 with sync_playwright() as pw:
     br = pw.chromium.launch(args=["--autoplay-policy=no-user-gesture-required"])
