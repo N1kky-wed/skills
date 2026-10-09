@@ -1,0 +1,3 @@
+# machine-specific setup for a skill stays local
+skills/*/local.md
+__pycache__/

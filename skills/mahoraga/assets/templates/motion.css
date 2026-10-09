@@ -1,0 +1,301 @@
+/* mahoraga motion kit: scroll-linked reveals, a pinned hero that recedes under the next sheet, page transitions
+   as a rising rounded sheet, a reading Manifesto, a marquee, and a baked grain. Drop into globals.css (Tailwind v4).
+   Needs --ease-out-expo and --ease-in-out-quart tokens, e.g.:
+     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+   Mark elements with data-reveal="rise|line-l|line-r|line-v|open|sheet|climb|words" and optional style --r: <0-12>
+   (a later start, in percent of the scroll range, for stagger). Wrap the home hero in .stick-hero. Give the site
+   header style={{ viewTransitionName: 'site-header' }} and wrap each page in <PageShell> (page-shell.tsx).
+   Grain needs public/img/grain.png (make_grain.py). */
+
+/* A faint film grain so the big lime fields never sit flat: a baked texture (public/img/grain.png) at normal blending,
+   painted once with its section rather than blended on every frame. */
+.grain {
+	position: relative;
+	isolation: isolate;
+}
+.grain::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background: url('/img/grain.png') repeat;
+	background-size: 160px 160px;
+	opacity: 0.55;
+}
+
+/* Scroll-linked motion. Every reveal rides the element's own trip through the viewport (animation-timeline: view()),
+   so it runs on the compositor, needs no script and rewinds when you scroll back up. Each kind has its own entrance:
+   copy rises out of depth, hairlines draw from their nodes, photographs open from a smaller frame while the picture
+   drifts inside it, sheets slide up and settle, the footer mark climbs out of its mask. --r shifts an element's start
+   a few percent later, for stagger. Browsers without scroll timelines simply show everything. */
+@supports (animation-timeline: view()) {
+	[data-reveal] {
+		animation-timing-function: linear;
+		animation-fill-mode: both;
+		animation-timeline: view();
+		animation-range: entry calc(var(--r, 0) * 1%) entry calc(75% + var(--r, 0) * 1%);
+	}
+	[data-reveal='rise'] {
+		animation-name: reveal-rise;
+	}
+	[data-reveal='line-l'],
+	[data-reveal='line-r'] {
+		animation-name: reveal-line;
+		animation-range: entry 0% cover 40%;
+	}
+	[data-reveal='line-l'] {
+		transform-origin: right;
+	}
+	[data-reveal='line-r'] {
+		transform-origin: left;
+	}
+	[data-reveal='line-v'] {
+		animation-name: reveal-line-v;
+		transform-origin: top;
+		animation-range: entry 20% cover 45%;
+	}
+	[data-reveal='open'] {
+		animation-name: reveal-open;
+		animation-range: entry 0% cover 45%;
+	}
+	[data-reveal='open'] img {
+		animation: reveal-drift linear both;
+		animation-timeline: view();
+		animation-range: cover 0% cover 100%;
+	}
+	[data-reveal='sheet'] {
+		animation-name: reveal-sheet;
+		animation-range: entry 0% entry 90%;
+		transform-origin: 50% 0%;
+	}
+	/* ends once the element is fully in view, which the last thing on a page can always reach; a range that runs into
+	   `cover` would leave the footer mark stuck half out of its mask at the bottom of the page */
+	[data-reveal='climb'] {
+		animation-name: reveal-climb;
+		animation-range: entry 0% entry 100%;
+	}
+	[data-reveal='words'] > span > span {
+		display: inline-block;
+		animation: reveal-word linear both;
+		animation-timeline: view();
+		animation-range: entry calc(10% + var(--w, 0) * 4%) cover calc(30% + var(--w, 0) * 4%);
+	}
+
+	/* The Manifesto reads line by line: a belief comes up to full strength as it reaches the middle of the screen and
+	   settles back once it has passed. */
+	.manifesto-line {
+		animation: manifesto-read linear both;
+		animation-timeline: view();
+		animation-range: cover 10% cover 90%;
+	}
+
+	/* The home hero holds still while the next sheet slides over it, shrinking back and fading as it goes. */
+	.stick-hero {
+		position: sticky;
+		top: 0;
+		z-index: 0;
+	}
+	.stick-hero > section {
+		transform-origin: 50% 20%;
+		animation: hero-recede linear both;
+		animation-timeline: scroll(root);
+		animation-range: 0 105svh;
+	}
+}
+@keyframes reveal-rise {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 64px, 0) scale(0.97);
+	}
+}
+@keyframes reveal-line {
+	from {
+		transform: scaleX(0);
+	}
+}
+@keyframes reveal-line-v {
+	from {
+		transform: scaleY(0);
+	}
+}
+@keyframes reveal-open {
+	from {
+		clip-path: inset(12% 9% 12% 9% round 64px);
+	}
+	to {
+		clip-path: inset(0 0 0 0 round 48px);
+	}
+}
+@keyframes reveal-drift {
+	from {
+		transform: scale(1.16) translate3d(0, -4%, 0);
+	}
+	to {
+		transform: scale(1.04) translate3d(0, 4%, 0);
+	}
+}
+@keyframes reveal-sheet {
+	from {
+		transform: translate3d(0, 120px, 0) scale(0.92);
+	}
+}
+@keyframes reveal-climb {
+	from {
+		transform: translate3d(0, 80%, 0);
+	}
+}
+@keyframes reveal-word {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 0.6em, 0) rotate(2deg);
+	}
+}
+@keyframes manifesto-read {
+	0% {
+		opacity: 0.14;
+		transform: translate3d(0, 28px, 0);
+	}
+	38%,
+	62% {
+		opacity: 1;
+		transform: none;
+	}
+	100% {
+		opacity: 0.32;
+		transform: none;
+	}
+}
+/* careSumerPAY's money moving from the patient to the provider, along the dashed line. */
+.pay-dot {
+	animation: pay-dot 1.8s var(--ease-in-out-quart) infinite;
+}
+@keyframes pay-dot {
+	0% {
+		left: 0;
+		opacity: 0;
+	}
+	15%,
+	85% {
+		opacity: 1;
+	}
+	100% {
+		left: calc(100% - 10px);
+		opacity: 0;
+	}
+}
+
+/* The partners drift past, forever. */
+.marquee {
+	animation: marquee 48s linear infinite;
+}
+.marquee:hover {
+	animation-play-state: paused;
+}
+@keyframes marquee {
+	to {
+		transform: translate3d(-50%, 0, 0);
+	}
+}
+@keyframes hero-recede {
+	to {
+		transform: scale(0.86) translate3d(0, 2%, 0);
+		opacity: 0;
+		visibility: hidden;
+	}
+}
+
+/* Inner page heroes animate on arrival. */
+.anim-rise {
+	animation: rise-in 1s var(--ease-out-expo) both;
+	animation-delay: var(--d, 0ms);
+}
+.anim-lift {
+	animation: lift-in 1.3s var(--ease-out-expo) both;
+	animation-delay: var(--d, 0ms);
+}
+.anim-draw-l,
+.anim-draw-r {
+	animation: draw 1.2s var(--ease-out-expo) 0.25s both;
+}
+.anim-draw-l {
+	transform-origin: right;
+}
+.anim-draw-r {
+	transform-origin: left;
+}
+@keyframes rise-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 0.5em, 0);
+	}
+}
+@keyframes lift-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 120px, 0);
+	}
+}
+@keyframes draw {
+	from {
+		transform: scaleX(0);
+	}
+}
+
+/* Route changes: the page you leave sinks back and dims; the next one rises over it as a lime-edged sheet with the
+   panel's big rounded corners, opening to full bleed; the bar stays where it is. */
+::view-transition-group(site-header) {
+	animation: none;
+	z-index: 20;
+}
+::view-transition-old(site-header),
+::view-transition-new(site-header) {
+	animation: none;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+}
+::view-transition-old(.page) {
+	animation: page-recede 560ms var(--ease-in-out-quart) both;
+	transform-origin: 50% 30%;
+}
+::view-transition-new(.page) {
+	animation: page-rise 760ms var(--ease-out-expo) 40ms both;
+}
+@keyframes page-recede {
+	to {
+		transform: scale(0.9);
+		opacity: 0.25;
+	}
+}
+@keyframes page-rise {
+	from {
+		clip-path: inset(100% 0 0 0 round 140px 140px 0 0);
+		transform: translate3d(0, 12%, 0);
+	}
+	to {
+		clip-path: inset(0 0 0 0 round 0 0 0 0);
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-reveal],
+	[data-reveal] img,
+	[data-reveal='words'] > span > span,
+	.manifesto-line,
+	.marquee,
+	.pay-dot,
+	.stick-hero > section {
+		animation: none !important;
+	}
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

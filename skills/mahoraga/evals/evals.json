@@ -1,0 +1,53 @@
+{
+  "skill_name": "mahoraga",
+  "evals": [
+    {
+      "id": 1,
+      "name": "eval-1-berkshire-redesign",
+      "prompt": "https://www.berkshirehathaway.com/ next one, redesigning this website for a pitch, we dont have the codebase. keep the same copy but in a new visual/animation style yeah?",
+      "expected_output": "A Next.js concept redesign of berkshirehathaway.com's home page that keeps every line of the live copy verbatim (no invented claims), shows real visuals instead of a plain text list, moves smoothly without blocking scroll, is marked as a concept (noindex, footer line), and passes a production build with no console errors or horizontal overflow on phone.",
+      "files": [],
+      "assertions": [
+        "Production build passes",
+        "Keeps the live copy verbatim: all 29 lines of berkshirehathaway.com appear on the new home page",
+        "Invents no figures: every number of 3+ digits, $ or % on the page is in the live copy",
+        "Marked as a concept: robots noindex and a visible 'concept' note",
+        "No arrows on buttons or links",
+        "Adds no em dashes (the live copy has none)",
+        "The first viewport is visual, not a plain field (50%+ of sample points over imagery or a textured background)",
+        "Uses real visuals: at least 2 large images or videos on the page",
+        "Loads with no console errors, page errors or failed requests",
+        "No horizontal overflow on a 390px phone",
+        "Scrolling is never blocked: a wheel scroll over the hero moves past the first screen",
+        "Respects reduced motion"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "eval-2-fernbook-dribbble",
+      "prompt": "new one: landing page + the dashboard screen for Fernbook (ai bookkeeping for freelancers, its a web app). i love this https://dribbble.com/shots/27756289-AI-Finance-Landing-Page make it like this",
+      "expected_output": "A Next.js landing page that faithfully follows the pinned Dribbble shot (measured palette, its type and signature details, its imagery made with the reference passed to Gemini) plus a dashboard route in the same world. The product is shown as a website (browser window), not a phone. The dashboard uses the width, has no grid holes, gives press feedback and a loading skeleton. Production build passes, no console errors, no horizontal overflow on phone.",
+      "files": [],
+      "assertions": [
+        "Production build passes",
+        "Palette follows the reference: warm grey ground within dE 6 and the grass green within dE 15 in the first viewport",
+        "Display type is a classical serif like the reference (largest text and h1)",
+        "A dashboard screen exists and renders",
+        "The dashboard uses the width: content spans at least 1200px of a 1600px window",
+        "The dashboard has a loading skeleton (a loading file in the app router)",
+        "Controls give press feedback (an :active transform or whileTap)",
+        "Writes no em dashes in its copy",
+        "The first viewport is visual, not a plain field (50%+ of sample points over imagery or a textured background)",
+        "Uses real visuals: at least 2 large images or videos on the page",
+        "Loads with no console errors, page errors or failed requests",
+        "No horizontal overflow on a 390px phone",
+        "Scrolling is never blocked: a wheel scroll over the hero moves past the first screen",
+        "Respects reduced motion",
+        "(judged) The hero carries the reference's signature: a giant serif word cropped by cut-out grass and flowers, with a dark green data card",
+        "(judged) The product is shown as a website or flat app UI, not a phone",
+        "(judged) The dashboard's grids have no holes",
+        "(judged) Imagery was generated with the reference image passed in"
+      ]
+    }
+  ]
+}
