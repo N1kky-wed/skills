@@ -222,3 +222,8 @@ correction comes in, add it under the right heading with the project and date, a
 ## Team Desk welcome screens
 
 - **A welcome screen is a greeting and useful actions, not an explanation or a worksheet.** The user rejected a generic, text-heavy opening and pinned a centered greeting, four concise action cards, quiet angular background and compact quick starts ("very generic lame text heavy welcome screen coould it be something like this", Team Desk, 2026-10-13). Keep long source context and fill-in forms out of the opening view. Personal LinkedIn relevance still determines what the actions produce; Slack is an optional source.
+
+
+## Multi-product landing: flow before decoration (8x Loop, October 13, 2026)
+
+The user rejected a decorative refinement: “we need a landing page with proper flow among all our products ... look at hussain's how clean and to the point it is with no extra fluff ... ours feels like we are doing it just for the sake of it.” A stronger visual treatment does not repair confused information architecture. State the shared offer, make the product choices obvious, then give each a short explanation, relevant visual and direct action. Say each fact once. Supporting tools such as reporting belong with their use case, not as a competing vertical. Remove repeated manifestos, galleries, stat walls and explanations of the design itself unless they help a visitor choose. A reference's clarity can be adopted without copying its layout. For 8x Loop, the confirmed scope is all five products plus supporting reporting; the selected visual mix is FORME + CASA NERO + XILab and a reflective 3D hero reference.
