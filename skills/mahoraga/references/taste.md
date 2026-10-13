@@ -218,3 +218,7 @@ correction comes in, add it under the right heading with the project and date, a
   video graded per theme, every surface captured in both.
 - **Color means something**: one action color; red and amber only for state; identity colors never red, amber or
   green.
+
+## Team Desk welcome screens
+
+- **A welcome screen is a greeting and useful actions, not an explanation or a worksheet.** The user rejected a generic, text-heavy opening and pinned a centered greeting, four concise action cards, quiet angular background and compact quick starts ("very generic lame text heavy welcome screen coould it be something like this", Team Desk, 2026-10-13). Keep long source context and fill-in forms out of the opening view. Personal LinkedIn relevance still determines what the actions produce; Slack is an optional source.
