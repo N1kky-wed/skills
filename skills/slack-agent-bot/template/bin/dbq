@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# dbq <name> "<sql>"   one READ-ONLY query against a named database.
+#
+# Why a wrapper: the triage pass gets Bash only as `Bash(dbq:*)`. A raw
+# `psql "$URL" ...` is refused under a prefix rule (variable expansion), and a
+# wrapper has nothing to expand. Read-only twice over: only read-only URLs are
+# passed to agents (READ_ENV_KEYS), and the statement runs inside BEGIN READ ONLY.
+#
+# Map names to env vars below, e.g.  main) url="${DB_READ_URL:-}" ;;
+set -euo pipefail
+[[ $# -eq 2 ]] || { echo 'usage: dbq <name> "<sql>"' >&2; exit 2; }
+case "$1" in
+  main) url="${DB_READ_URL:-}" ;;
+  *) echo "dbq: unknown database '$1'" >&2; exit 2 ;;
+esac
+[[ -n "$url" ]] || { echo "dbq: no read connection for '$1' in this environment" >&2; exit 3; }
+exec psql "$url" -v ON_ERROR_STOP=1 -X -A -q \
+  -c "BEGIN READ ONLY" -c "SET LOCAL statement_timeout = 30000" -c "$2" -c "COMMIT"

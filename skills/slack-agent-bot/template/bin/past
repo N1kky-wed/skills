@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# past                  the last 15 requests the bot handled
+# past search <word>    requests or answers mentioning <word>
+# past show <id>        one in full
+# Read-only. Lets an agent check for prior work before redoing it.
+ROOT="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+cd "$ROOT" && exec "$ROOT/.venv/bin/python" - "$@" <<'PY'
+import json, sys
+from bot import config, state
+s = state.Store(config.STATE_DB)
+a = sys.argv[1:]
+rows = s.recent(15) if not a else s.search(" ".join(a[1:])) if a[0] == "search" else [s.get(a[1])] if a[0] == "show" and len(a) == 2 else None
+if rows is None:
+    sys.exit("usage: past [search <word> | show <id>]")
+for r in filter(None, rows):
+    res = json.loads(r.get("run_result") or r.get("triage_result") or "{}")
+    print(f"{r['created_at'][:16]} {r['status']:<12} {r['request_id']}\n  asked: {(r['request_text'] or '')[:300]}\n  said:  {(res.get('summary') or res.get('message') or '')[:500]}")
+    out = config.OUT_ROOT / config.safe_id(r["request_id"])
+    if out.is_dir():
+        for f in sorted(out.iterdir()):
+            print(f"  file:  {f}")
+PY

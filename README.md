@@ -61,3 +61,25 @@ cp -r skills/skills/switchboard ~/.claude/skills/
 ```
 
 The first time it runs it saves a `switchboard-map.md` of your servers and Slack agents and keeps it current.
+
+## slack-agent-bot
+
+A Slack bot that turns messages in a channel into real work done by Claude Code on a GitHub repo, running on your
+own VPS. People tag it; it answers, looks things up, or writes code in an isolated worktree, runs the tests, and the
+bot (not the agent) ships a commit or PR, with per-person write rights, scoped secrets, follow-ups, progress lines and
+file attachments.
+
+- `skills/slack-agent-bot/SKILL.md` — architecture, safety rules, setup steps, operations
+- `skills/slack-agent-bot/template/` — the tested bot: listener, pipeline, prompts, ops CLI (`botctl`), `doctor.py`,
+  Slack manifest, systemd unit, tests with a fake `claude`
+- `skills/slack-agent-bot/scripts/install.sh` — idempotent VPS installer
+- `skills/slack-agent-bot/references/` — architecture, security, Slack app, VPS setup, operations, lessons, extending
+
+### Install
+
+```bash
+cp -r skills/skills/slack-agent-bot ~/.claude/skills/
+```
+
+Then ask Claude to set up a Slack bot. On the server: `bash skills/slack-agent-bot/scripts/install.sh ~/slack-agent-bot`.
+Tokens go in that directory's `.env` on the server (0600), never into a chat.

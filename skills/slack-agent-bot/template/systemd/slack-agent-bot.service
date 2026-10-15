@@ -1,0 +1,35 @@
+# Installed by scripts/install.sh with __USER__/__ROOT__/__PATH__ filled in.
+[Unit]
+Description=Slack -> Claude Code agent bot
+After=network-online.target
+Wants=network-online.target
+StartLimitBurst=10
+StartLimitIntervalSec=300
+
+[Service]
+Type=simple
+User=__USER__
+Group=__USER__
+WorkingDirectory=__ROOT__
+# The claude CLI usually lives under nvm/npm; a service shell is not a login
+# shell, so PATH is spelled out.
+Environment=HOME=__HOME__
+Environment=PATH=__PATH__
+Environment=PYTHONUNBUFFERED=1
+Environment=COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+# Secrets are NOT in this unit: the process reads .env (0600) itself, so
+# `systemctl cat` and the journal never carry a token.
+ExecStart=__ROOT__/.venv/bin/python __ROOT__/app.py
+Restart=always
+RestartSec=5
+# A restart kills running jobs; give them a moment to be marked.
+TimeoutStopSec=20
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=slack-agent-bot
+
+[Install]
+WantedBy=multi-user.target

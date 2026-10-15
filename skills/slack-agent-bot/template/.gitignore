@@ -1,0 +1,9 @@
+.env
+.venv/
+state/
+repo/
+work/
+out/
+in/
+/slack-agent-bot.service
+__pycache__/

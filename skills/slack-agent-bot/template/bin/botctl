@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Operator tool; see botctl.py. Works from anywhere.
+ROOT="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+cd "$ROOT" && exec "$ROOT/.venv/bin/python" "$ROOT/botctl.py" "$@"
