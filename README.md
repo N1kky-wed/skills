@@ -44,3 +44,20 @@ cp -r skills/skills/mahoraga ~/.claude/skills/
 Image and video scripts read `GEMINI_API_KEY` from the environment, or from the .env file named by `--env` or
 `$MAHORAGA_ENV`. Machine-specific setup (key file, git identity, Vercel scope, where past projects live) goes in
 `~/.claude/skills/mahoraga/local.md`, started from `local.example.md`; it is git-ignored and never pushed.
+
+## switchboard
+
+A method for organising and building systems and agents across whatever MCP servers and connectors you have, and for
+handing parts of the work to the AI agents in your Slack workspace. It builds a map of your tools and Slack agents
+(read-only), maps a goal onto them, messages agents only in a private agent channel or their DM (never where people
+work), reads their replies from the thread, and runs the build with parallel agents.
+
+- `skills/switchboard/SKILL.md` — the method
+
+### Install
+
+```bash
+cp -r skills/skills/switchboard ~/.claude/skills/
+```
+
+The first time it runs it saves a `switchboard-map.md` of your servers and Slack agents and keeps it current.
