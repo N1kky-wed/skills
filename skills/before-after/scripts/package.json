@@ -1,0 +1,9 @@
+{
+  "name": "before-after-skill",
+  "private": true,
+  "type": "module",
+  "description": "Playwright for before-after.mjs when the project being photographed has none of its own.",
+  "dependencies": {
+    "playwright": "1.62.0"
+  }
+}

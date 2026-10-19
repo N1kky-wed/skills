@@ -83,3 +83,24 @@ cp -r skills/skills/slack-agent-bot ~/.claude/skills/
 
 Then ask Claude to set up a Slack bot. On the server: `bash skills/slack-agent-bot/scripts/install.sh ~/slack-agent-bot`.
 Tokens go in that directory's `.env` on the server (0600), never into a chat.
+
+## before-after
+
+Before-and-after screenshots of a change to any web app. It photographs the same routes at the same viewports
+(desktop and phone) on two versions, a base ref and a branch in their own throwaway worktrees with their own dev
+servers, or two URLs such as production and a preview deploy. Each screen goes side by side under a caption,
+printed to a PDF, with the PNGs kept.
+
+- `skills/before-after/SKILL.md` — picking the two versions, running the app, signing in, writing shots, limits
+- `skills/before-after/scripts/before-after.mjs` — capture, layout, PDF and pair PNGs (Node + Playwright)
+- `skills/before-after/examples/8x-linkedin-local-stack.mjs` — a worked config: a Next.js monorepo on a local
+  stack, with a minted session and a database reset between sides
+
+### Install
+
+```bash
+cp -r skills/skills/before-after ~/.claude/skills/
+cd ~/.claude/skills/before-after/scripts && pnpm install   # Playwright, for repos without their own
+```
+
+Then ask Claude for a before and after of a PR or a change.
