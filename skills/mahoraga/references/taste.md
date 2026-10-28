@@ -524,6 +524,11 @@ correction comes in, add it under the right heading with the project and date, a
   composition and ratios, then size the app so the whole summary (both bento rows) plus the start of the list fits
   one laptop screen: 15–17px card titles, 13–14px body, ~52px rings, ~24px panel padding. Screenshot at the user's
   real window size before showing.
+- **An app is pages, not one long scroll.** A dashboard that stacked the summary bento over every list drew "please
+  dont have so much scrolling split them into different pages" (8x priorities dashboard, 2026-10-29). Give the
+  summary its own page that fills the window, put each list (per priority, per project, overdue) behind a tab with
+  its count, and split long lists into numbered pages sized to fit the window (measure rows, shrink the page size
+  until nothing scrolls). Summary cards link to their page rather than scrolling down to a list.
 - **A rail widens in place** and pushes the page; never an overlay sheet. Opening and closing feel equally smooth
   (close was "instant", open "slow"); animate the rail's width and translate the page on the compositor.
 - **Fast feel**: skeletons on click, instant press feedback (global `:active` scale .975), spinners on submit.
