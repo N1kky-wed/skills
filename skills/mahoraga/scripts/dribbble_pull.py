@@ -13,13 +13,14 @@ from playwright.sync_api import sync_playwright
 from PIL import Image, ImageDraw, ImageFont
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36"
-SHOTS_JS = """() => [...document.querySelectorAll('li.shot-thumbnail, li[id^="screenshot-"]')].map(li => {
+SHOTS_JS = r"""() => [...document.querySelectorAll('li.shot-thumbnail, li[id^="screenshot-"], div.shot2-item')].map(li => {
     const a = li.querySelector('a.shot-thumbnail-link, a[href*="/shots/"]');
     const img = li.querySelector('figure img, img');
     let src = img ? (img.getAttribute('data-srcset') || img.getAttribute('srcset') || img.src || '') : '';
     if (src.includes(',')) { const parts = src.split(',').map(s => s.trim().split(' ')[0]); src = parts.find(p => p.includes('resize=800x600')) || parts[parts.length - 1]; }
+    src = src.replace(/resize=\d+x\d*/, 'resize=800x');
     const title = (li.querySelector('.shot-title, [class*=title]') || {}).textContent || (img && img.alt) || '';
-    const who = (li.querySelector('.display-name, .user-information a') || {}).textContent || '';
+    const who = (li.querySelector('.display-name, .user-information a, [class*=display-name], [class*=user-name]') || {}).textContent || '';
     return { href: a ? a.href : '', src, title: title.trim(), who: who.trim() };
 }).filter(s => s.src && s.href && !/advertis/i.test(s.href))"""
 
@@ -55,7 +56,7 @@ def main():
     except Exception:
         font = ImageFont.load_default()
     for i, s in enumerate(shots):
-        src = s["src"].replace("resize=400x300", "resize=800x600")
+        src = s["src"]
         try:
             req = urllib.request.Request(src, headers={"User-Agent": "Mozilla/5.0"})
             im = Image.open(io.BytesIO(urllib.request.urlopen(req, timeout=20).read())).convert("RGB")

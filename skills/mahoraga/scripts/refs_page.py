@@ -16,13 +16,13 @@ Then serve it and open it in the browser pane (a file:// page outside the projec
 that no tool can check): add a launch config running `python -m http.server <port> --bind 127.0.0.1 --directory
 <out>` and preview_start it, and confirm every image loaded (naturalWidth 1600).
 """
-import argparse, html, io, json, pathlib, urllib.request
+import argparse, html, io, json, pathlib, re, urllib.request
 from PIL import Image
 
 
 def fetch(src, dest):
     if src.startswith("http"):
-        src = src.replace("resize=400x300", "resize=1600x1200").replace("resize=800x600", "resize=1600x1200")
+        src = re.sub(r"resize=\d+x\d*", "resize=1600x", src)  # old 800x600 and new width-only 840x URLs
         req = urllib.request.Request(src, headers={"User-Agent": "Mozilla/5.0"})
         im = Image.open(io.BytesIO(urllib.request.urlopen(req, timeout=30).read()))
     else:
